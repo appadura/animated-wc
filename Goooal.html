@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football can be cruel - Animated Storyboard</title>
+    <style>
+        :root {
+            --morocco-red: #c1272d;
+            --morocco-green: #006233;
+            --canada-red: #ff0000;
+            --bg-dark: #0f0f0f;
+            --card-bg: #1a1a1a;
+            --text-main: #f0f0f0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 3px solid var(--morocco-red);
+            margin-bottom: 30px;
+            transition: all 0.5s ease;
+        }
+
+        header.brazil-theme {
+            border-bottom-color: #FFCC00;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin: 0;
+            text-transform: uppercase;
+            font-style: italic;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, var(--morocco-red), var(--morocco-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: all 0.5s ease;
+        }
+
+        h1.brazil-theme {
+            background: linear-gradient(to right, #009c3b, #FFCC00);
+            -webkit-background-clip: text;
+        }
+
+        /* Video Player */
+        .player-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto 40px auto;
+            background: #000;
+            border: 6px solid #222;
+            border-radius: 12px;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+        }
+
+        #animation-viewport {
+            width: 100%;
+            height: 100%;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: background-image 0.2s ease-in-out;
+            position: relative;
+        }
+
+        #animation-viewport::before {
+            content: "Save images as scene1.jpg to scene8.jpg";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #333;
+            z-index: -1;
+        }
+
+        .vfx-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        #speed-lines {
+            background: repeating-linear-gradient(90deg, transparent, transparent 15px, rgba(255,255,255,0.15) 16px, rgba(255,255,255,0.15) 17px);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        /* Controls */
+        .controls-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 20px auto 40px auto;
+            background: rgba(0,0,0,0.85);
+            padding: 12px 30px;
+            border-radius: 50px;
+            width: fit-content;
+            border: 1px solid #444;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .btn {
+            background: var(--morocco-red);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .btn:hover { background: #ff1a1a; }
+        .btn:disabled { background: #666; cursor: not-allowed; opacity: 0.7; }
+        #timer { font-family: monospace; font-size: 1.2rem; color: #fff; }
+
+        #loading-status {
+            color: #888;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        /* Storyboard Grid */
+        .scene-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .scene-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #333;
+        }
+
+        .thumb {
+            width: 100%;
+            height: 160px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .info { padding: 12px; }
+        .title { color: var(--morocco-red); font-weight: bold; }
+        .time { font-size: 0.8rem; color: #888; }
+
+        /* VFX Animations */
+        .shake { animation: shakeAnim 0.3s infinite; }
+        @keyframes shakeAnim {
+            0% { transform: translate(1px, 1px); }
+            25% { transform: translate(-1px, -2px); }
+            50% { transform: translate(-3px, 0px); }
+            75% { transform: translate(3px, 2px); }
+            100% { transform: translate(1px, -1px); }
+        }
+
+        .flash { animation: flashAnim 0.2s; }
+        @keyframes flashAnim {
+            0% { filter: brightness(3) contrast(1.5); }
+            100% { filter: brightness(1) contrast(1); }
+        }
+
+        /* Transition Text */
+        .transition-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-align: center;
+            font-style: italic;
+            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+            animation: slideIn 0.5s ease-out;
+            width: 100%;
+        }
+
+        @keyframes slideIn {
+            from { transform: translate(-50%, -40%); opacity: 0; }
+            to { transform: translate(-50%, -50%); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header id="main-header">
+            <h1 id="main-title">Written In The Stars</h1>
+            <p id="main-subtitle">Morocco vs Canada | Animated Storyboard</p>
+        </header>
+
+        <audio id="stadium-sound" loop>
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+            <!-- Suggestion: Replace the URL above with a local 'stadium.mp3' file for the best effect -->
+        </audio>
+
+        <div class="player-wrapper">
+            <div id="animation-viewport"></div>
+            <div id="speed-lines" class="vfx-layer"></div>
+        </div>
+
+        <div class="controls-container">
+            <button id="play-btn" class="btn" onclick="play()" disabled>Loading Scenes...</button>
+            <button class="btn" style="background:#444" onclick="reset()">Reset</button>
+            <div id="timer">00:00</div>
+        </div>
+        <div id="loading-status">Preloading assets: 0%</div>
+    </div>
+
+    <script>
+        const scenes = [
+            // Morocco vs Canada (3s per scene)
+            { id: 1, time: 0, end: 3, img: "https://i.ibb.co/4nPJnRFr/scene1.png", vfx: "" },
+            { id: 2, time: 3, end: 6, img: "https://i.ibb.co/rKX2gn42/scene2.png", vfx: "" },
+            { id: 3, time: 6, end: 9, img: "https://i.ibb.co/VYgBNGjj/scene3.png", vfx: "shake flash speed" },
+            { id: 4, time: 9, end: 12, img: "https://i.ibb.co/VYVhpqvG/scene4.png", vfx: "" },
+            { id: 5, time: 12, end: 15, img: "https://i.ibb.co/svp8w5sD/scene5.png", vfx: "speed" },
+            { id: 6, time: 15, end: 18, img: "https://i.ibb.co/r2qvDd04/scene6.png", vfx: "shake flash" },
+            { id: 7, time: 18, end: 21, img: "https://i.ibb.co/spXjCKBR/scene7.png", vfx: "shake flash" },
+            { id: 8, time: 21, end: 24, img: "https://i.ibb.co/G3b7TsHm/scene8.png", vfx: "" },
+            { id: 9, time: 24, end: 27, img: "https://i.ibb.co/7JgXpDFs/scene.png", vfx: "" },
+
+            // Brazil vs Norway (3s per scene)
+            { id: 10, time: 29, end: 32, img: "https://i.ibb.co/DsvYKZM/1.png", vfx: "" },
+            { id: 11, time: 32, end: 35, img: "https://i.ibb.co/tMSxP2R6/2.png", vfx: "" },
+            { id: 12, time: 35, end: 38, img: "https://i.ibb.co/8LnNkSB7/3.png", vfx: "shake flash speed" },
+            { id: 13, time: 38, end: 41, img: "https://i.ibb.co/1tNYVZSy/4.png", vfx: "" },
+            { id: 14, time: 41, end: 44, img: "https://i.ibb.co/nM6F7CjD/5.png", vfx: "speed" },
+            { id: 15, time: 44, end: 47, img: "https://i.ibb.co/kgJr0s6n/6.png", vfx: "shake flash" },
+            { id: 16, time: 47, end: 50, img: "https://i.ibb.co/1tDhmMtw/7.png", vfx: "shake flash" },
+            { id: 17, time: 50, end: 53, img: "https://i.ibb.co/5gPvTbcN/8.png", vfx: "" },
+            { id: 18, time: 53, end: 56, img: "https://i.ibb.co/tTb3m2b6/9.png", vfx: "" },
+
+            // Argentina vs Egypt (3s per scene)
+            { id: 19, time: 58, end: 61, img: "https://i.ibb.co/bgqbFPTs/1.png", vfx: "" },
+            { id: 20, time: 61, end: 64, img: "https://i.ibb.co/QGchBtP/2.png", vfx: "" },
+            { id: 21, time: 64, end: 67, img: "https://i.ibb.co/9ksPG50N/3.png", vfx: "shake flash speed" },
+            { id: 22, time: 67, end: 70, img: "https://i.ibb.co/4gm0GMQf/4.png", vfx: "" },
+            { id: 23, time: 70, end: 73, img: "https://i.ibb.co/VcmvjsMH/5.png", vfx: "speed" },
+            { id: 24, time: 73, end: 76, img: "https://i.ibb.co/mM03pz8/6.png", vfx: "shake flash" },
+            { id: 25, time: 76, end: 79, img: "https://i.ibb.co/Wvk19Mfk/7.png", vfx: "shake flash" },
+            { id: 26, time: 79, end: 82, img: "https://i.ibb.co/1Gj6hTbX/8.png", vfx: "" },
+            { id: 27, time: 82, end: 85, img: "https://i.ibb.co/bMLcJYC5/9.png", vfx: "" },
+
+            // Belgium vs USA (3s per scene)
+            { id: 28, time: 87, end: 90, img: "https://i.ibb.co/ddvqMnC/1.png", vfx: "" },
+            { id: 29, time: 90, end: 93, img: "https://i.ibb.co/xqPbhM13/2.png", vfx: "" },
+            { id: 30, time: 93, end: 96, img: "https://i.ibb.co/6cP8yN4h/3.png", vfx: "shake flash speed" },
+            { id: 31, time: 96, end: 99, img: "https://i.ibb.co/Cs84BdN0/4.png", vfx: "" },
+            { id: 32, time: 99, end: 102, img: "https://i.ibb.co/N6WkbJ0q/5.png", vfx: "speed" },
+            { id: 33, time: 102, end: 105, img: "https://i.ibb.co/vxKQXD5s/6.png", vfx: "shake flash" },
+            { id: 34, time: 105, end: 108, img: "https://i.ibb.co/7JccMt1G/7.png", vfx: "shake flash" },
+            { id: 35, time: 108, end: 111, img: "https://i.ibb.co/4G3B2WL/8.png", vfx: "" },
+            { id: 36, time: 111, end: 114, img: "https://i.ibb.co/rKJxJpKs/9.png", vfx: "" },
+
+            // France vs Uruguay (3s per scene)
+            { id: 37, time: 116, end: 119, img: "https://i.ibb.co/0RkgXKGq/1.png", vfx: "" },
+            { id: 38, time: 119, end: 122, img: "https://i.ibb.co/8D8tTYYB/2.png", vfx: "" },
+            { id: 39, time: 122, end: 125, img: "https://i.ibb.co/MXLgZ15/3.png", vfx: "shake flash speed" },
+            { id: 40, time: 125, end: 128, img: "https://i.ibb.co/5gvnH7SH/4.png", vfx: "" },
+            { id: 41, time: 128, end: 131, img: "https://i.ibb.co/5gWZKnYV/6.png", vfx: "speed" },
+            { id: 42, time: 131, end: 134, img: "https://i.ibb.co/jv3Q0tgz/7.png", vfx: "shake flash" },
+
+            // Mexico vs England (3s per scene)
+            { id: 43, time: 136, end: 139, img: "https://i.ibb.co/5xx5HXMd/1.png", vfx: "" },
+            { id: 44, time: 139, end: 142, img: "https://i.ibb.co/M5sL3kFY/2.png", vfx: "shake speed" },
+            { id: 45, time: 142, end: 145, img: "https://i.ibb.co/rRG9gWLH/3.png", vfx: "flash" }
+        ];
+
+        let currentTime = 0;
+        let ticker;
+        let imagesLoaded = 0;
+
+        // Preload Logic
+        function preloadAssets() {
+            const playBtn = document.getElementById('play-btn');
+            const status = document.getElementById('loading-status');
+
+            scenes.forEach(scene => {
+                const img = new Image();
+                img.src = scene.img;
+                img.onload = () => {
+                    imagesLoaded++;
+                    const progress = Math.round((imagesLoaded / scenes.length) * 100);
+                    status.innerText = `Preloading assets: ${progress}%`;
+
+                    if (imagesLoaded === scenes.length) {
+                        playBtn.disabled = false;
+                        playBtn.innerText = "Play Storyboard";
+                        status.innerText = "All scenes ready.";
+                    }
+                };
+            });
+        }
+
+        window.onload = preloadAssets;
+
+        function play() {
+            const sound = document.getElementById('stadium-sound');
+            if (sound) sound.play().catch(e => console.log("Audio play blocked by browser. Click Play again."));
+
+            if (ticker) clearInterval(ticker);
+            currentTime = 0;
+            ticker = setInterval(update, 100);
+        }
+
+        function reset() {
+            const sound = document.getElementById('stadium-sound');
+            if (sound) {
+                sound.pause();
+                sound.currentTime = 0;
+            }
+
+            clearInterval(ticker);
+            currentTime = 0;
+            update();
+        }
+
+        function update() {
+            const viewport = document.getElementById('animation-viewport');
+            const speed = document.getElementById('speed-lines');
+            const timer = document.getElementById('timer');
+            const sound = document.getElementById('stadium-sound');
+            const header = document.getElementById('main-header');
+            const title = document.getElementById('main-title');
+            const subtitle = document.getElementById('main-subtitle');
+
+            const scene = scenes.find(s => currentTime >= s.time && currentTime < s.end);
+
+            // Dynamic Title Logic
+            if (currentTime >= 145) {
+                title.innerText = "Presentation Complete";
+                subtitle.innerText = "Thank you for watching | Animated Storyboard";
+                header.style.borderBottomColor = "#444";
+                title.style.background = "#fff";
+                title.style.webkitBackgroundClip = "text";
+            } else if (currentTime >= 136) {
+                title.innerText = "Eleven Controlled, Ten Earned";
+                subtitle.innerText = "Mexico vs England | Animated Storyboard";
+                header.style.borderBottomColor = "#006847"; // Mexico Green
+                title.style.background = "linear-gradient(to right, #006847, #ffffff, #ce1126)"; // Green, White, Red
+                title.style.webkitBackgroundClip = "text";
+            } else if (currentTime >= 116) {
+                title.innerText = "The cool and the dirty";
+                subtitle.innerText = "France vs Uruguay | Animated Storyboard";
+                header.style.borderBottomColor = "#002395"; // France Blue
+                title.style.background = "linear-gradient(to right, #002395, #ffffff, #ED2939)"; // Blue, White, Red
+                title.style.webkitBackgroundClip = "text";
+            } else if (currentTime >= 87) {
+                title.innerText = "Football's Answer";
+                subtitle.innerText = "Belgium vs USA | Animated Storyboard";
+                header.style.borderBottomColor = "#EF3340"; // Belgium Red
+                title.style.background = "linear-gradient(to right, #000000, #FFD100, #EF3340)"; // Black, Yellow, Red
+                title.style.webkitBackgroundClip = "text";
+            } else if (currentTime >= 58) {
+                title.innerText = "The Cruel Beauty of Football";
+                subtitle.innerText = "Argentina vs Egypt | Animated Storyboard";
+                header.style.borderBottomColor = "#74ACDF"; // Argentina Blue
+                title.style.background = "linear-gradient(to right, #74ACDF, #ffffff)";
+                title.style.webkitBackgroundClip = "text";
+            } else if (currentTime >= 29) {
+                title.innerText = "Football can be cruel";
+                subtitle.innerText = "Brazil vs Norway | Animated Storyboard";
+                header.classList.add('brazil-theme');
+                title.classList.add('brazil-theme');
+                header.style.borderBottomColor = ""; // Reset inline override
+            } else {
+                title.innerText = "Written In The Stars";
+                subtitle.innerText = "Morocco vs Canada | Animated Storyboard";
+                header.classList.remove('brazil-theme');
+                title.classList.remove('brazil-theme');
+                header.style.borderBottomColor = "";
+            }
+
+            if (scene) {
+                viewport.style.backgroundImage = `url('${scene.img}')`;
+                viewport.innerHTML = ''; // Clear transition text
+
+                // VFX
+                speed.style.opacity = scene.vfx.includes('speed') ? 1 : 0;
+
+                if (scene.vfx.includes('shake') && (currentTime - scene.time) < 0.6) {
+                    viewport.classList.add('shake');
+                    if (scene.vfx.includes('flash')) viewport.classList.add('flash');
+                } else {
+                    viewport.classList.remove('shake');
+                    viewport.classList.remove('flash');
+                }
+            } else if (currentTime >= 27 && currentTime < 29) {
+                // Transition 1
+                viewport.style.backgroundImage = 'none';
+                viewport.innerHTML = '<div class="transition-text">NEXT MATCH...<br>BRAZIL vs NORWAY</div>';
+                speed.style.opacity = 0;
+            } else if (currentTime >= 56 && currentTime < 58) {
+                // Transition 2
+                viewport.style.backgroundImage = 'none';
+                viewport.innerHTML = '<div class="transition-text">NEXT MATCH...<br>ARGENTINA vs EGYPT</div>';
+                speed.style.opacity = 0;
+            } else if (currentTime >= 85 && currentTime < 87) {
+                // Transition 3
+                viewport.style.backgroundImage = 'none';
+                viewport.innerHTML = '<div class="transition-text">NEXT MATCH...<br>BELGIUM vs USA</div>';
+                speed.style.opacity = 0;
+            } else if (currentTime >= 114 && currentTime < 116) {
+                // Transition 4
+                viewport.style.backgroundImage = 'none';
+                viewport.innerHTML = '<div class="transition-text">NEXT MATCH...<br>FRANCE vs URUGUAY</div>';
+                speed.style.opacity = 0;
+            } else if (currentTime >= 134 && currentTime < 136) {
+                // Transition 5
+                viewport.style.backgroundImage = 'none';
+                viewport.innerHTML = '<div class="transition-text">NEXT MATCH...<br>MEXICO vs ENGLAND</div>';
+                speed.style.opacity = 0;
+            } else if (currentTime >= 145 && currentTime < 150) {
+                // End Card
+                viewport.style.backgroundImage = 'none';
+                viewport.innerHTML = '<div class="transition-text" style="font-size: 4rem;">THANK YOU</div>';
+                speed.style.opacity = 0;
+            } else {
+                viewport.style.backgroundImage = 'none';
+                viewport.innerHTML = '';
+                viewport.classList.remove('shake');
+                viewport.classList.remove('flash');
+                speed.style.opacity = 0;
+            }
+
+            // Stop sound at 150 seconds when everything finishes
+            if (currentTime >= 150.0 && sound) {
+                sound.pause();
+            }
+
+            if (currentTime >= 150.0) {
+                clearInterval(ticker);
+            }
+
+            timer.innerText = `00:${Math.floor(currentTime).toString().padStart(2, '0')}`;
+            currentTime += 0.1;
+        }
+    </script>
+</body>
+</html>
